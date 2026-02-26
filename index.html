@@ -116,10 +116,13 @@
 
     // ─── Constants ───
     const STATUSES = [
-      { id: 'waiting_delivery_date', label: '納期回答待ち', color: 'from-blue-500 to-blue-600', bg: 'bg-blue-50', badge: 'bg-blue-100 text-blue-700', icon: '📅' },
-      { id: 'delivered', label: '納品済み', color: 'from-emerald-500 to-green-600', bg: 'bg-green-50', badge: 'bg-green-100 text-green-700', icon: '✅' },
+      { id: 'estimate_request', label: '見積もり依頼', color: 'from-purple-500 to-violet-600', bg: 'bg-purple-50', badge: 'bg-purple-100 text-purple-700', icon: '📝' },
+      { id: 'estimating', label: '見積り中', color: 'from-indigo-500 to-blue-600', bg: 'bg-indigo-50', badge: 'bg-indigo-100 text-indigo-700', icon: '🔍' },
+      { id: 'estimate_completed', label: '見積り完了', color: 'from-blue-500 to-blue-600', bg: 'bg-blue-50', badge: 'bg-blue-100 text-blue-700', icon: '✅' },
+      { id: 'waiting_delivery_date', label: '納期回答待ち', color: 'from-amber-500 to-orange-600', bg: 'bg-amber-50', badge: 'bg-amber-100 text-amber-700', icon: '📅' },
+      { id: 'delivery_date_confirmed', label: '納期確定', color: 'from-emerald-500 to-green-600', bg: 'bg-green-50', badge: 'bg-green-100 text-green-700', icon: '📦' },
       { id: 'waiting_construction_date', label: '工事日回答待ち', color: 'from-cyan-500 to-teal-600', bg: 'bg-cyan-50', badge: 'bg-cyan-100 text-cyan-700', icon: '📆' },
-      { id: 'in_construction', label: '工事中', color: 'from-rose-500 to-pink-600', bg: 'bg-rose-50', badge: 'bg-rose-100 text-rose-700', icon: '🏗️' },
+      { id: 'construction_date_confirmed', label: '工事日確定', color: 'from-rose-500 to-pink-600', bg: 'bg-rose-50', badge: 'bg-rose-100 text-rose-700', icon: '🏗️' },
       { id: 'construction_completed', label: '工事完了', color: 'from-slate-600 to-slate-700', bg: 'bg-slate-50', badge: 'bg-slate-200 text-slate-700', icon: '🏁' },
     ];
 
@@ -127,12 +130,12 @@
 
     // ─── Sample Data ───
     const SAMPLE_DATA = [
-      { id: '1', companyName: 'あかつき工務店', siteName: '佐藤様邸', productName: 'インプラス 窓2か所', constructionDate: '2026-03-01', arrivalDate: '2026-02-27', status: 'waiting_delivery_date', notes: '2F リビング・寝室' },
-      { id: '2', companyName: '大和ハウス', siteName: '田中様邸', productName: '玄関ドア リシェント', constructionDate: '2026-02-27', arrivalDate: '', status: 'waiting_delivery_date', notes: '色：クリエダーク' },
-      { id: '3', companyName: 'あかつき工務店', siteName: '鈴木様邸', productName: 'サーモスX 掃出し窓', constructionDate: '2026-03-05', arrivalDate: '2026-03-02', status: 'delivered', notes: '' },
-      { id: '4', companyName: 'ミライホーム', siteName: '山田様邸', productName: 'インプラス 窓4か所', constructionDate: '2026-02-25', arrivalDate: '2026-02-23', status: 'waiting_construction_date', notes: '先進的窓リノベ対象' },
-      { id: '5', companyName: '大和ハウス', siteName: '高橋様邸', productName: 'エクステリア カーポート', constructionDate: '2026-03-10', arrivalDate: '2026-03-07', status: 'in_construction', notes: '' },
-      { id: '6', companyName: 'ミライホーム', siteName: '伊藤様邸', productName: 'インプラス 3か所', constructionDate: '2026-02-26', arrivalDate: '', status: 'waiting_delivery_date', notes: '至急手配必要' },
+      { id: '1', companyName: 'あかつき工務店', siteName: '佐藤様邸', productName: 'インプラス 窓2か所', constructionDate: '2026-03-01', arrivalDate: '2026-02-27', status: 'estimate_request', notes: '2F リビング・寝室' },
+      { id: '2', companyName: '大和ハウス', siteName: '田中様邸', productName: '玄関ドア リシェント', constructionDate: '2026-02-27', arrivalDate: '', status: 'estimating', notes: '色：クリエダーク' },
+      { id: '3', companyName: 'あかつき工務店', siteName: '鈴木様邸', productName: 'サーモスX 掃出し窓', constructionDate: '2026-03-05', arrivalDate: '2026-03-02', status: 'estimate_completed', notes: '' },
+      { id: '4', companyName: 'ミライホーム', siteName: '山田様邸', productName: 'インプラス 窓4か所', constructionDate: '2026-02-25', arrivalDate: '2026-02-23', status: 'waiting_delivery_date', notes: '先進的窓リノベ対象' },
+      { id: '5', companyName: '大和ハウス', siteName: '高橋様邸', productName: 'エクステリア カーポート', constructionDate: '2026-03-10', arrivalDate: '2026-03-07', status: 'waiting_construction_date', notes: '' },
+      { id: '6', companyName: 'ミライホーム', siteName: '伊藤様邸', productName: 'インプラス 3か所', constructionDate: '2026-02-26', arrivalDate: '', status: 'delivery_date_confirmed', notes: '至急手配必要' },
     ];
 
     // ─── Utilities ───
@@ -162,7 +165,7 @@
       if (card.status === 'construction_completed') return 'normal';
       // 工事予定日の3日前以内なら危険
       const daysUntilConstruction = getDaysUntil(card.constructionDate);
-      if (daysUntilConstruction <= 3 && daysUntilConstruction !== Infinity && card.status !== 'delivered' && card.status !== 'in_construction') return 'danger';
+      if (daysUntilConstruction <= 3 && daysUntilConstruction !== Infinity && card.status !== 'construction_date_confirmed' && card.status !== 'construction_completed') return 'danger';
       // 納期予定日から3日以上経過で未納品なら危険
       const daysSinceArrival = getDaysSince(card.arrivalDate);
       if (daysSinceArrival >= 3 && card.status === 'waiting_delivery_date') return 'danger';
@@ -324,7 +327,7 @@
         productName: card.productName || '',
         constructionDate: card.constructionDate || '',
         arrivalDate: card.arrivalDate || '',
-        status: card.status || 'waiting_delivery_date',
+        status: card.status || 'estimate_request',
         notes: card.notes || '',
       });
 
@@ -548,7 +551,7 @@
       }, []);
 
       const handleNewCard = () => {
-        setModalCard({ companyName: '', siteName: '', productName: '', constructionDate: '', arrivalDate: '', status: 'waiting_delivery_date', notes: '' });
+        setModalCard({ companyName: '', siteName: '', productName: '', constructionDate: '', arrivalDate: '', status: 'estimate_request', notes: '' });
       };
 
       const handleSave = (card) => {
